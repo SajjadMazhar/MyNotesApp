@@ -1,13 +1,21 @@
-
 let addButton = document.getElementById("addbtn");
 let search = document.getElementById("search");
 let alertDiv = document.querySelector(".alerts");
 let cards = document.getElementById("cards");
-let noteObj = {};
+let clearButton = document.getElementById("clrbtn");
+let delAllBtn = document.getElementById("deleteAll");
 let count = 0;
-showCards()
+showCards();
 
-function clearArea(){
+function clearRecords() {
+    let decision = confirm("Are you sure, you want to delete all notes?");
+    if (decision) {
+        localStorage.clear();
+        showCards();
+    }
+}
+
+function clearArea() {
     document.getElementById("note").value = '';
 }
 
@@ -25,36 +33,38 @@ function timeStamp() {
 }
 
 function showCards() {
-    if (Object.keys(noteObj).length != 0){
+    if (localStorage != null) {
         cards.innerHTML = '';
-        for (let key in noteObj) {
-            cards.innerHTML += noteObj[key]; 
+        for (let key in localStorage) {
+            cards.innerHTML += localStorage.getItem(key);
         }
     }
-    else{
-        document.getElementById("cards").innerHTML = "<h4>Nothing to show!</h4>"
+    else {
+        cards.innerHTML = ""
+        cards.innerHTML = "<h4>Nothing to show!</h4>"
     }
 }
 
 function deleteCard(key) {
-    delete noteObj[key];
+    localStorage.removeItem(key)
     showCards();
 }
 
 addButton.addEventListener("click", e => {
-    let textContent = document.getElementById("note");
-    if (textContent.value != "") {
-        content = `
+    let textAreaContent = document.getElementById("note");
+    if (textAreaContent.value != "") {
+        cardContent = `
             <div class="card m-2" style="width: 18rem;">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 text-muted">${timeStamp()}</h6>
-                    <p class="card-text">${textContent.value}</p>
+                    <p class="card-text">${textAreaContent.value}</p>
                     <button type="button" class="btn btn-success" id="${count}" onclick="deleteCard(${count})">Delete</button>
                 </div>
             </div>`;
 
-        noteObj[count] = content;
+        localStorage.setItem(count.toString(), cardContent);
         showCards();
+        console.log(localStorage)
         count += 1;
         let alertMsg = `<div class="alert alert-success" role="alert">
         Your note is added successfully!
@@ -88,3 +98,6 @@ search.addEventListener("input", () => {
 
     })
 });
+
+clearButton.addEventListener("click", clearArea);
+delAllBtn.addEventListener("click", clearRecords);
