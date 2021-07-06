@@ -4,12 +4,24 @@ let alertDiv = document.querySelector(".alerts");
 let cards = document.getElementById("cards");
 let clearButton = document.getElementById("clrbtn");
 let delAllBtn = document.getElementById("deleteAll");
+let notesList = [];
 let count = 0;
 showCards();
+
+function setToLocal(stamp, content) {
+    let notesObj = {
+        tStamp: stamp,
+        noteContent: content
+    };
+
+    notesList.push(notesObj);
+    localStorage.setItem("MyNotes", JSON.stringify(notesList));
+}
 
 function clearRecords() {
     let decision = confirm("Are you sure, you want to delete all notes?");
     if (decision) {
+        notesList = []
         localStorage.clear();
         showCards();
     }
@@ -33,20 +45,41 @@ function timeStamp() {
 }
 
 function showCards() {
-    if (localStorage != null) {
-        cards.innerHTML = '';
-        for (let key in localStorage) {
-            cards.innerHTML += localStorage.getItem(key);
-        }
+    if (localStorage.getItem("MyNotes") != null) {
+        let htmlStr = "";
+
+
+        JSON.parse(localStorage.getItem("MyNotes")).forEach((item, index) => {
+            htmlStr += `
+            <div class="card m-2" style="width: 18rem;">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">${item.tStamp}</h6>
+                    <p class="card-text">${item.noteContent}</p>
+                    <button type="button" class="btn btn-success" id="${index}" onclick="deleteCard(${index})">Delete</button>
+                </div>
+            </div>`;
+        });
+
+        cards.innerHTML = htmlStr;
     }
     else {
-        cards.innerHTML = ""
-        cards.innerHTML = "<h4>Nothing to show!</h4>"
+        cards.innerHTML = "";
+        cards.innerHTML = "<h4>Nothing to show!</h4>";
     }
 }
 
-function deleteCard(key) {
-    localStorage.removeItem(key)
+function deleteCard(index) {
+
+    let notes = localStorage.getItem("MyNotes");
+    if (notes == null) {
+        notesList = [];
+    } else {
+        notesList = JSON.parse(notes);
+    }
+
+    notesList.splice(index, 1);
+    localStorage.setItem("MyNotes", JSON.stringify(notesList));
+
     showCards();
 }
 
@@ -62,9 +95,9 @@ addButton.addEventListener("click", e => {
                 </div>
             </div>`;
 
-        localStorage.setItem(count.toString(), cardContent);
+        setToLocal(timeStamp(), textAreaContent.value)
         showCards();
-        console.log(localStorage)
+
         count += 1;
         let alertMsg = `<div class="alert alert-success" role="alert">
         Your note is added successfully!
