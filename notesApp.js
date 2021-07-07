@@ -38,9 +38,21 @@ function timeStamp() {
     let day = d.getDate();
     let hour = d.getHours();
     let minute = d.getMinutes();
-    let nowDate = `Added on ${day}/${month}/${year}`;
-    let time = `at ${hour}:${minute}.`;
-    let stamp = `${nowDate}<br>${time}`;
+    if (minute < 10) {
+        minute = '0' + minute.toString();
+    }
+    if (hour < 10) {
+        hour = '0' + hour.toString();
+    }
+    if (day < 10) {
+        day = '0' + day.toString();
+    }
+    if (month < 10) {
+        month = '0' + month.toString();
+    }
+    let nowDate = `Date: ${day}/${month}/${year}`;
+    let time = `Time: ${hour}:${minute}`;
+    let stamp = `(${nowDate} - ${time})`;
     return stamp;
 }
 
@@ -53,7 +65,7 @@ function showCards() {
             htmlStr += `
             <div class="card m-2" style="width: 18rem;">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">${item.tStamp}</h6>
+                    <p id="time" class="card-subtitle mb-2 text-muted">${item.tStamp}</p><br>
                     <p class="card-text">${item.noteContent}</p>
                     <button type="button" class="btn btn-success" id="${index}" onclick="deleteCard(${index})">Delete</button>
                 </div>
@@ -89,7 +101,7 @@ addButton.addEventListener("click", e => {
         cardContent = `
             <div class="card m-2" style="width: 18rem;">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">${timeStamp()}</h6>
+                    <p class="time card-subtitle mb-2 text-muted">${timeStamp()}</p><br>
                     <p class="card-text">${textAreaContent.value}</p>
                     <button type="button" class="btn btn-success" id="${count}" onclick="deleteCard(${count})">Delete</button>
                 </div>
@@ -119,10 +131,10 @@ addButton.addEventListener("click", e => {
 
 search.addEventListener("input", () => {
     let inputValue = search.value.toLowerCase();
-    let allNotes = document.getElementsByClassName("card");
+    let allNotes = document.getElementsByClassName("card m-2");
     Array.from(allNotes).forEach(note => {
-        let noteText = note.getElementsByTagName("p")[0].innerHTML;
-        if (noteText.includes(inputValue)) {
+        let noteText = note.getElementsByTagName("p")[1].innerHTML;
+        if (noteText.toLowerCase().includes(inputValue)) {
             note.style.display = "block";
         }
         else {
@@ -130,6 +142,7 @@ search.addEventListener("input", () => {
         }
 
     })
+    console.log(allNotes)
 });
 
 clearButton.addEventListener("click", clearArea);
