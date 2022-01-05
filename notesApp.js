@@ -75,7 +75,6 @@ function showCards() {
         cards.innerHTML = htmlStr;
     }
     else {
-        cards.innerHTML = "";
         cards.innerHTML = "<h4>Nothing to show!</h4>";
     }
 }
@@ -93,6 +92,12 @@ function deleteCard(index) {
     localStorage.setItem("MyNotes", JSON.stringify(notesList));
 
     showCards();
+    alertDiv.innerHTML = `<div class="alert alert-danger" role="alert">
+    Your note is deleted Successfully!
+                    </div>`
+    setInterval(() => {
+        alertDiv.innerHTML = ""
+    }, 5000);
 }
 
 addButton.addEventListener("click", e => {
